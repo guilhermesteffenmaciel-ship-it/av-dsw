@@ -1,4 +1,4 @@
-# 🍴 Reserva de Mesas
+# 🍴 Reserva de Mesas (AV DSW)
 
 Aplicação web full stack para **reserva de mesas em restaurantes**, desenvolvida para a disciplina de DSW (AV1 e AV2, 4º bimestre).
 
