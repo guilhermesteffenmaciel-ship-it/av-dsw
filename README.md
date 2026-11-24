@@ -2,7 +2,7 @@
 
 Aplicação web full stack para **reserva de mesas em restaurantes**, desenvolvida para a disciplina de DSW (AV1 e AV2, 4º bimestre).
 
-> **Aplicação publicada:** `https://SEU-PROJETO.vercel.app` *(preencher após o deploy)*
+> **Aplicação publicada:** https://av-dsw.vercel.app
 > **API publicada:** `https://SEU-BACKEND.onrender.com/api` *(preencher após o deploy)*
 
 ## Problema, público-alvo e solução
