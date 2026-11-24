@@ -1,0 +1,66 @@
+// Schema do banco de dados - Sistema de Reserva de Mesas
+// Documentação: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client"
+  output   = "../generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+// Perfis de acesso do sistema
+enum Perfil {
+  CLIENTE // faz e gerencia as próprias reservas
+  ADMIN // gerencia as mesas e vê/cancela todas as reservas
+}
+
+// Situação de uma reserva
+enum StatusReserva {
+  CONFIRMADA
+  CANCELADA
+}
+
+model Usuario {
+  id       Int       @id @default(autoincrement())
+  nome     String
+  email    String    @unique
+  senha    String // guardamos somente o HASH da senha (bcrypt)
+  perfil   Perfil    @default(CLIENTE)
+  criadoEm DateTime  @default(now())
+  reservas Reserva[]
+
+  @@map("usuarios")
+}
+
+model Mesa {
+  id          Int       @id @default(autoincrement())
+  numero      Int       @unique // número exibido no restaurante (ex.: Mesa 5)
+  capacidade  Int // quantidade máxima de pessoas
+  localizacao String // ex.: Salão, Varanda, Área externa
+  ativa       Boolean   @default(true) // mesa inativa não aceita novas reservas
+  criadoEm    DateTime  @default(now())
+  reservas    Reserva[]
+
+  @@map("mesas")
+}
+
+model Reserva {
+  id                Int           @id @default(autoincrement())
+  inicio            DateTime // data e hora de chegada
+  fim               DateTime // calculado: inicio + duração padrão da reserva
+  quantidadePessoas Int
+  observacao        String?
+  status            StatusReserva @default(CONFIRMADA)
+  criadoEm          DateTime      @default(now())
+  atualizadoEm      DateTime      @updatedAt
+
+  usuarioId Int
+  usuario   Usuario @relation(fields: [usuarioId], references: [id], onDelete: Cascade)
+  mesaId    Int
+  mesa      Mesa    @relation(fields: [mesaId], references: [id], onDelete: Restrict)
+
+  @@index([mesaId, inicio])
+  @@map("reservas")
+}
