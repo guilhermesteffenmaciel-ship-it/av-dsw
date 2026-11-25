@@ -24,6 +24,7 @@ Aplicação web full stack para **reserva de mesas em restaurantes**, desenvolvi
 | Frontend | React e React Router | 19 / 7 |
 | Frontend | Tailwind CSS: `tailwindcss` e `@tailwindcss/vite` | **4.3.0** (fixado) |
 | Frontend | Vite | 8 |
+| Frontend | GSAP + ScrollTrigger e @gsap/react (animações guiadas pelo scroll) | 3.15.1 / 2.1.2 |
 | Deploy | Render (API e banco) e Vercel (frontend) | – |
 
 ## Funcionalidades
@@ -33,6 +34,8 @@ Aplicação web full stack para **reserva de mesas em restaurantes**, desenvolvi
 - **CRUD de mesas** (administrador): cadastrar, listar, editar, ativar/desativar e excluir
 - Consulta de mesas disponíveis por horário e quantidade de pessoas
 - Interface responsiva, com mensagens de sucesso e erro, estados de carregamento e listas vazias
+- Visual "cósmico" interativo: fundo de estrelas em canvas com parallax (mouse e scroll), landing page com animações GSAP ScrollTrigger (sistema orbital de mesas, demonstração animada da regra anti-colisão, stack em rolagem horizontal), cartões de vidro com brilho que segue o cursor e efeito "warp" ao confirmar uma reserva
+- Respeita a preferência do sistema "reduzir movimento" (prefers-reduced-motion)
 
 ### Regras de negócio (verificadas no backend: `backend/src/services/reservaService.js`)
 
@@ -82,7 +85,9 @@ reserva-mesas/
 │   │   ├── services/api.js      # chamadas à API (envia o JWT e trata erros)
 │   │   ├── context/             # AuthContext (sessão) e ToastContext (mensagens)
 │   │   ├── components/          # Navbar, RotaProtegida, Modal, formulários, UI
-│   │   ├── pages/               # Login, Cadastro, Reservas, Mesas, 404
+│   │   ├── pages/               # Home (landing), Login, Cadastro, Reservas, Mesas, 404
+│   │   ├── components/cosmos/   # fundo de estrelas (canvas) e halo do cursor
+│   │   ├── hooks/               # useSpotlight e useTilt (efeitos de interação)
 │   │   └── utils/datas.js
 │   ├── vercel.json              # faz as rotas do React funcionarem na Vercel
 │   └── .env.example
@@ -202,7 +207,10 @@ Exemplo de erro de validação:
 
 ## Fontes dos componentes de interface
 
-Os componentes visuais (botões, campos, modal, tabela, cartões, menu responsivo, notificações) foram escritos para este projeto com classes utilitárias do **Tailwind CSS 4.3** e adaptados ao tema do restaurante. Nenhum componente de biblioteca de terceiros foi copiado.
+Os componentes visuais (botões, campos, modal, tabela, cartões, menu responsivo, notificações, landing page, fundo de estrelas) foram escritos para este projeto com classes utilitárias do **Tailwind CSS 4.3** e utilitários próprios (`@utility glass`, `spotlight`, `text-gradient` e `bg-grid` em `frontend/src/index.css`). Nenhum componente pronto de terceiros foi copiado.
 
-- Fonte **Inter**, via [Google Fonts](https://fonts.google.com/specimen/Inter) (SIL Open Font License)
-- Paleta de cores padrão do Tailwind CSS (MIT) e uma cor `brand` definida em `frontend/src/index.css` com `@theme`
+Bibliotecas e recursos externos utilizados:
+
+- [GSAP e ScrollTrigger](https://gsap.com) com [@gsap/react](https://www.npmjs.com/package/@gsap/react): animações guiadas pelo scroll ([licença "Standard No Charge"](https://gsap.com/standard-license), de uso gratuito)
+- Fontes [Inter](https://fonts.google.com/specimen/Inter), [Space Grotesk](https://fonts.google.com/specimen/Space+Grotesk) e [JetBrains Mono](https://fonts.google.com/specimen/JetBrains+Mono), via Google Fonts (SIL Open Font License)
+- Paleta padrão do Tailwind CSS (MIT) e cores próprias `space-*` e `neon-*` definidas com `@theme`

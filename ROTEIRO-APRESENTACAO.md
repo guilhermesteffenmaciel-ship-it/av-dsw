@@ -56,7 +56,11 @@
 
 ## AV2: Frontend e publicação (URL pública)
 
-**1. Contexto:** problema, público-alvo e solução (mesmo texto do README).
+**1. Contexto:** abra a página inicial publicada e **role devagar**. A própria landing conta a história:
+- Hero: o problema e a solução ("Sem ligações, sem papel, sem reservas em dobro")
+- "Como funciona": os 3 passos, com as mesas orbitando
+- **"Protocolo anti-colisão"**: a regra de negócio animada. Mostre a barra do João batendo na da Maria (409) e depois indo para 21h (201). Explique a condição `existente.inicio < novo.fim && existente.fim > novo.inicio`.
+- Stack: as tecnologias usadas
 
 **2. Demonstração**
 
@@ -81,6 +85,7 @@
 - *E se o token expirar?* A API devolve 401; o `api.js` chama `aoExpirarSessao`, registrado no `AuthContext`, que faz logout e redireciona para `/login`.
 - *A proteção do React basta?* Não. O `RotaProtegida` só melhora a experiência; quem garante a segurança é o backend. Mesmo que alguém burle o React, a API responde 401/403.
 - *Context API?* O `AuthContext` disponibiliza `usuario`, `login`, `logout` e `isAdmin` para qualquer componente, sem precisar passar props.
-- *Tailwind 4.3?* `@import "tailwindcss"` no `index.css`, plugin `@tailwindcss/vite` e cores próprias com `@theme` (`bg-brand-600`). Responsividade com prefixos `sm:`, `md:` e `lg:`.
+- *Como funcionam as animações?* GSAP ScrollTrigger (`pages/Home.jsx`): `scrub` liga a animação à posição do scroll e `pin` fixa a seção enquanto ela anima. O fundo de estrelas é um `<canvas>` (`components/cosmos/CosmicBackground.jsx`): estrelas mais "próximas" se movem mais com o mouse e o scroll, e isso cria o parallax. Quem ativa "reduzir movimento" no sistema vê a página estática (`gsap.matchMedia`).
+- *Tailwind 4.3?* `@import "tailwindcss"` no `index.css`, plugin `@tailwindcss/vite` e cores próprias com `@theme` (`bg-space-950`, `text-neon-cyan`) e utilitários próprios com `@utility` (`glass`, `spotlight`). Responsividade com prefixos `sm:`, `md:` e `lg:`.
 - *Por que `vercel.json`?* Para que rotas como `/reservas` não deem 404 ao recarregar a página (todas apontam para o `index.html` e o React Router resolve).
 - *Onde ficam os segredos em produção?* Nas variáveis de ambiente do Render. No frontend existe apenas `VITE_API_URL`, que é pública.

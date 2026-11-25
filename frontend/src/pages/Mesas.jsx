@@ -1,11 +1,13 @@
 // Página de mesas.
 // ADMIN: CRUD completo (cadastrar, editar, ativar/desativar, excluir).
 // CLIENTE: apenas consulta as mesas ativas e pode iniciar uma reserva.
-import { useCallback, useEffect, useState } from 'react';
+import { useGSAP } from '@gsap/react';
+import gsap from 'gsap';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import ConfirmarModal from '../components/ConfirmarModal';
 import MesaFormModal from '../components/MesaFormModal';
-import { Alerta, Badge, Botao, Carregando, EstadoVazio } from '../components/ui';
+import { Alerta, Badge, Botao, CabecalhoPagina, Carregando, EstadoVazio } from '../components/ui';
 import { useAuth } from '../context/AuthContext';
 import { useToast } from '../context/ToastContext';
 import { api } from '../services/api';
@@ -39,6 +41,13 @@ export default function Mesas() {
     carregar();
   }, [carregar]);
 
+  const listaRef = useRef(null);
+  useGSAP(() => {
+    gsap.matchMedia().add('(prefers-reduced-motion: no-preference)', () => {
+      gsap.from('.item-mesa', { y: 30, opacity: 0, duration: 0.55, stagger: 0.05, ease: 'power3.out' });
+    });
+  }, { scope: listaRef, dependencies: [mesas, carregando], revertOnUpdate: true });
+
   function aoSalvar(mesa) {
     toast.sucesso(emEdicao ? `Mesa ${mesa.numero} atualizada!` : `Mesa ${mesa.numero} cadastrada!`);
     setFormAberto(false);
@@ -70,57 +79,66 @@ export default function Mesas() {
     }
   }
 
-  return (
-    <div className="mx-auto max-w-6xl px-4 py-8">
-      <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
-        <div>
-          <h1 className="text-2xl font-bold text-stone-900">{isAdmin ? 'Gerenciar mesas' : 'Nossas mesas'}</h1>
-          <p className="mt-1 text-sm text-stone-500">
-            {isAdmin ? 'Cadastre, edite, desative ou exclua as mesas do restaurante.' : 'Escolha uma mesa e faça sua reserva.'}
-          </p>
-        </div>
-        {isAdmin && <Botao onClick={() => { setEmEdicao(null); setFormAberto(true); }}>+ Nova mesa</Botao>}
-      </div>
+  const abrirNova = () => { setEmEdicao(null); setFormAberto(true); };
 
-      <div className="mt-6">
+  return (
+    <div className="mx-auto max-w-6xl px-4 pb-16 pt-28">
+      <CabecalhoPagina
+        rotulo={isAdmin ? '// hangar de mesas' : '// mapa estelar'}
+        titulo={isAdmin ? 'Gerenciar mesas' : 'Nossas mesas'}
+        descricao={isAdmin ? 'Cadastre, edite, desative ou exclua as mesas do restaurante.' : 'Cada ponto em órbita é um lugar à mesa. Escolha a sua e reserve.'}
+        acao={isAdmin && <Botao onClick={abrirNova} className="px-5">＋ Nova mesa</Botao>}
+      />
+
+      <div className="mt-8" ref={listaRef}>
         {carregando ? (
-          <Carregando texto="Carregando mesas..." />
+          <Carregando texto="Mapeando mesas" />
         ) : erro ? (
           <div className="space-y-3">
             <Alerta>{erro}</Alerta>
-            <Botao variante="secundario" onClick={carregar}>Tentar novamente</Botao>
+            <Botao variante="secundario" onClick={carregar}>↻ Tentar novamente</Botao>
           </div>
         ) : mesas.length === 0 ? (
           <EstadoVazio
             titulo="Nenhuma mesa cadastrada"
             descricao={isAdmin ? 'Cadastre a primeira mesa do restaurante.' : 'O restaurante ainda não cadastrou mesas.'}
-            acao={isAdmin && <Botao onClick={() => { setEmEdicao(null); setFormAberto(true); }}>Cadastrar mesa</Botao>}
+            acao={isAdmin && <Botao onClick={abrirNova}>Cadastrar mesa</Botao>}
           />
         ) : isAdmin ? (
           // Tabela para o administrador (rola horizontalmente em telas pequenas)
-          <div className="overflow-x-auto rounded-xl border border-stone-200 bg-white shadow-sm">
-            <table className="min-w-full divide-y divide-stone-200 text-sm">
-              <thead className="bg-stone-50 text-left text-xs font-semibold uppercase tracking-wide text-stone-500">
-                <tr>
-                  <th className="px-4 py-3">Mesa</th>
-                  <th className="px-4 py-3">Capacidade</th>
-                  <th className="px-4 py-3">Localização</th>
-                  <th className="px-4 py-3">Situação</th>
-                  <th className="px-4 py-3 text-right">Ações</th>
+          <div className="glass overflow-x-auto rounded-3xl">
+            <table className="min-w-full text-sm">
+              <thead>
+                <tr className="border-b border-white/10 text-left font-mono text-[10px] uppercase tracking-[0.2em] text-slate-500">
+                  <th className="px-5 py-4 font-normal">Mesa</th>
+                  <th className="px-5 py-4 font-normal">Capacidade</th>
+                  <th className="px-5 py-4 font-normal">Localização</th>
+                  <th className="px-5 py-4 font-normal">Situação</th>
+                  <th className="px-5 py-4 text-right font-normal">Ações</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-stone-100">
+              <tbody className="divide-y divide-white/5">
                 {mesas.map((m) => (
-                  <tr key={m.id} className="hover:bg-stone-50">
-                    <td className="whitespace-nowrap px-4 py-3 font-semibold">Mesa {m.numero}</td>
-                    <td className="whitespace-nowrap px-4 py-3">{m.capacidade} pessoas</td>
-                    <td className="whitespace-nowrap px-4 py-3">{m.localizacao}</td>
-                    <td className="whitespace-nowrap px-4 py-3">{m.ativa ? <Badge cor="verde">Ativa</Badge> : <Badge cor="ambar">Inativa</Badge>}</td>
-                    <td className="whitespace-nowrap px-4 py-3 text-right">
+                  <tr key={m.id} className="item-mesa transition hover:bg-white/[0.04]">
+                    <td className="whitespace-nowrap px-5 py-3.5">
+                      <span className="flex items-center gap-3 font-display font-semibold text-white">
+                        <span className="grid size-9 place-items-center rounded-xl bg-linear-to-br from-neon-violet/30 to-neon-cyan/20 ring-1 ring-white/10">{m.numero}</span>
+                        Mesa {m.numero}
+                      </span>
+                    </td>
+                    <td className="whitespace-nowrap px-5 py-3.5 text-slate-300">
+                      <span className="flex items-center gap-1">
+                        {Array.from({ length: Math.min(m.capacidade, 10) }).map((_, i) => <span key={i} className="size-1.5 rounded-full bg-neon-cyan/70" />)}
+                        <span className="ml-2">{m.capacidade} pessoas</span>
+                      </span>
+                    </td>
+                    <td className="whitespace-nowrap px-5 py-3.5 text-slate-300">{m.localizacao}</td>
+                    <td className="whitespace-nowrap px-5 py-3.5">{m.ativa ? <Badge cor="verde">Ativa</Badge> : <Badge cor="ambar">Inativa</Badge>}</td>
+                    <td className="whitespace-nowrap px-5 py-3.5 text-right">
                       <div className="inline-flex gap-1">
-                        <Botao variante="fantasma" className="px-2 py-1 shadow-none" onClick={() => { setEmEdicao(m); setFormAberto(true); }}>Editar</Botao>
-                        <Botao variante="fantasma" className="px-2 py-1 shadow-none" onClick={() => alternarAtiva(m)}>{m.ativa ? 'Desativar' : 'Ativar'}</Botao>
-                        <Botao variante="fantasma" className="px-2 py-1 text-red-600 shadow-none hover:bg-red-50" onClick={() => setAExcluir(m)}>Excluir</Botao>
+                        <Botao variante="fantasma" className="px-3 py-1.5" aria-label={`Editar mesa ${m.numero}`} onClick={() => { setEmEdicao(m); setFormAberto(true); }}>Editar</Botao>
+                        <Botao variante="fantasma" className="px-3 py-1.5" aria-label={`${m.ativa ? 'Desativar' : 'Ativar'} mesa ${m.numero}`} onClick={() => alternarAtiva(m)}>{m.ativa ? 'Desativar' : 'Ativar'}</Botao>
+                        <Botao variante="fantasma" className="px-3 py-1.5 text-neon-red hover:bg-neon-red/10 hover:text-neon-red" aria-label={`Excluir mesa ${m.numero}`} onClick={() => setAExcluir(m)}>Excluir</Botao>
                       </div>
                     </td>
                   </tr>
@@ -129,19 +147,28 @@ export default function Mesas() {
             </table>
           </div>
         ) : (
-          // Cartões para o cliente
-          <ul className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+          // Cartões "planeta" para o cliente: as cadeiras orbitam a mesa
+          <ul className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
             {mesas.map((m) => (
-              <li key={m.id} className="rounded-xl border border-stone-200 bg-white p-5 shadow-sm">
-                <div className="flex items-center gap-4">
-                  <span className="grid size-12 place-items-center rounded-full bg-brand-50 text-lg font-bold text-brand-700">{m.numero}</span>
-                  <div>
-                    <h3 className="font-semibold">Mesa {m.numero}</h3>
-                    <p className="text-sm text-stone-500">{m.localizacao} · até {m.capacidade} pessoas</p>
+              <li key={m.id} className="item-mesa glass spotlight group flex flex-col items-center rounded-3xl p-6 text-center transition duration-300 hover:-translate-y-1 hover:border-white/20">
+                <div className="relative my-3 size-36">
+                  <div className="absolute inset-0 rounded-full border border-dashed border-white/15 transition duration-[2s] group-hover:rotate-180">
+                    {Array.from({ length: m.capacidade }).map((_, i) => (
+                      <span
+                        key={i}
+                        className="absolute left-1/2 top-1/2 size-3 rounded-full bg-neon-cyan shadow-[0_0_10px] shadow-neon-cyan"
+                        style={{ transform: `translate(-50%, -50%) rotate(${(360 / m.capacidade) * i}deg) translateY(-72px)` }}
+                      />
+                    ))}
+                  </div>
+                  <div className="absolute inset-7 grid place-items-center rounded-full bg-[radial-gradient(circle_at_30%_25%,#fde68a,#f472b6_40%,#7c3aed_80%)] font-display text-3xl font-bold text-white shadow-[0_0_50px_-6px] shadow-neon-pink/60 transition duration-500 group-hover:scale-110">
+                    {m.numero}
                   </div>
                 </div>
-                <Botao variante="secundario" className="mt-4 w-full" onClick={() => navigate('/reservas', { state: { novaReservaMesaId: m.id } })}>
-                  Reservar esta mesa
+                <h3 className="mt-3 font-display text-lg font-semibold text-white">Mesa {m.numero}</h3>
+                <p className="text-sm text-slate-400">{m.localizacao} · até {m.capacidade} pessoas</p>
+                <Botao variante="secundario" className="mt-5 w-full" onClick={() => navigate('/reservas', { state: { novaReservaMesaId: m.id } })}>
+                  Reservar esta mesa →
                 </Botao>
               </li>
             ))}

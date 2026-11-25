@@ -1,4 +1,4 @@
-// Janela modal genérica (usada nos formulários e confirmações).
+// Janela modal genérica (usada nos formulários e confirmações), com entrada animada.
 import { useEffect } from 'react';
 
 export default function Modal({ aberto, aoFechar, titulo, children }) {
@@ -13,12 +13,13 @@ export default function Modal({ aberto, aoFechar, titulo, children }) {
   if (!aberto) return null;
 
   return (
-    <div className="fixed inset-0 z-40 flex items-end justify-center p-0 sm:items-center sm:p-4" role="dialog" aria-modal="true" aria-labelledby="modal-titulo">
-      <div className="absolute inset-0 bg-stone-900/50" onClick={aoFechar} />
-      <div className="relative max-h-[90vh] w-full overflow-y-auto rounded-t-2xl bg-white p-6 shadow-xl sm:max-w-lg sm:rounded-2xl">
-        <div className="mb-4 flex items-start justify-between gap-4">
-          <h2 id="modal-titulo" className="text-lg font-semibold text-stone-900">{titulo}</h2>
-          <button onClick={aoFechar} className="rounded p-1 text-stone-400 hover:bg-stone-100 hover:text-stone-600" aria-label="Fechar">✕</button>
+    <div className="fixed inset-0 z-50 flex items-end justify-center sm:items-center sm:p-4" role="dialog" aria-modal="true" aria-labelledby="modal-titulo">
+      <div className="absolute inset-0 bg-space-950/70 backdrop-blur-sm" onClick={aoFechar} />
+      <div className="glass relative max-h-[92vh] w-full overflow-y-auto rounded-t-3xl bg-space-900/80 p-6 shadow-[0_0_80px_-20px] shadow-neon-violet/50 starting:translate-y-8 starting:opacity-0 transition duration-300 sm:max-w-lg sm:rounded-3xl">
+        <div className="pointer-events-none absolute inset-x-10 top-0 h-px bg-linear-to-r from-transparent via-neon-cyan to-transparent" />
+        <div className="mb-5 flex items-start justify-between gap-4">
+          <h2 id="modal-titulo" className="font-display text-xl font-semibold text-white">{titulo}</h2>
+          <button onClick={aoFechar} className="grid size-8 place-items-center rounded-lg text-slate-400 transition hover:rotate-90 hover:bg-white/10 hover:text-white" aria-label="Fechar">✕</button>
         </div>
         {children}
       </div>

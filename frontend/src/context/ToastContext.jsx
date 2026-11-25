@@ -23,20 +23,20 @@ export function ToastProvider({ children }) {
   return (
     <ToastContext.Provider value={toast}>
       {children}
-      <div className="fixed inset-x-4 bottom-4 z-50 flex flex-col gap-2 sm:left-auto sm:w-96" aria-live="polite">
+      <div className="fixed inset-x-4 bottom-4 z-[60] flex flex-col gap-2 sm:left-auto sm:w-96" aria-live="polite">
         {toasts.map((t) => (
           <div
             key={t.id}
             role="status"
-            className={`flex items-start gap-3 rounded-lg border p-4 shadow-lg ${
-              t.tipo === 'sucesso' ? 'border-emerald-200 bg-emerald-50 text-emerald-900' : 'border-red-200 bg-red-50 text-red-900'
+            className={`glass flex items-start gap-3 rounded-2xl bg-space-900/80 p-4 shadow-2xl transition duration-300 starting:translate-x-8 starting:opacity-0 ${
+              t.tipo === 'sucesso' ? 'border-neon-green/40 shadow-neon-green/10' : 'border-neon-red/40 shadow-neon-red/10'
             }`}
           >
-            <span className="text-lg leading-none">{t.tipo === 'sucesso' ? '✓' : '!'}</span>
-            <p className="flex-1 text-sm">{t.mensagem}</p>
-            <button onClick={() => remover(t.id)} className="text-sm opacity-60 hover:opacity-100" aria-label="Fechar">
-              ✕
-            </button>
+            <span className={`grid size-6 shrink-0 place-items-center rounded-full font-mono text-xs ${t.tipo === 'sucesso' ? 'bg-neon-green/20 text-neon-green' : 'bg-neon-red/20 text-neon-red'}`}>
+              {t.tipo === 'sucesso' ? '✓' : '!'}
+            </span>
+            <p className="flex-1 text-sm text-slate-100">{t.mensagem}</p>
+            <button onClick={() => remover(t.id)} className="text-sm text-slate-500 hover:text-white" aria-label="Fechar">✕</button>
           </div>
         ))}
       </div>

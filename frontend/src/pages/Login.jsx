@@ -4,6 +4,7 @@ import { Alerta, Botao, Campo, errosPorCampo } from '../components/ui';
 import { useAuth } from '../context/AuthContext';
 import { useToast } from '../context/ToastContext';
 import AuthLayout from './AuthLayout';
+import { dispararWarp } from '../components/cosmos/CosmicBackground';
 
 export default function Login() {
   const { usuario, login } = useAuth();
@@ -26,6 +27,7 @@ export default function Login() {
     setEnviando(true);
     try {
       const u = await login(form);
+      dispararWarp(); // efeito de 'salto' no fundo de estrelas
       toast.sucesso(`Bem-vindo(a), ${u.nome}!`);
       navigate(location.state?.de || '/reservas', { replace: true });
     } catch (err) {
@@ -37,15 +39,15 @@ export default function Login() {
   }
 
   return (
-    <AuthLayout titulo="Entrar" subtitulo="Acesse sua conta para ver e fazer reservas.">
+    <AuthLayout rotulo="// acesso à nave" titulo="Entrar" subtitulo="Acesse sua conta para ver e fazer reservas.">
       <form onSubmit={enviar} className="space-y-4" noValidate>
         {erro && <Alerta>{erro}</Alerta>}
         <Campo id="email" name="email" type="email" label="E-mail" autoComplete="email" value={form.email} onChange={alterar} erro={errosCampos.email} required />
         <Campo id="senha" name="senha" type="password" label="Senha" autoComplete="current-password" value={form.senha} onChange={alterar} erro={errosCampos.senha} required />
-        <Botao type="submit" carregando={enviando} className="w-full">Entrar</Botao>
+        <Botao type="submit" carregando={enviando} className="w-full py-3">Entrar</Botao>
       </form>
-      <p className="mt-6 text-center text-sm text-stone-500">
-        Ainda não tem conta? <Link to="/cadastro" className="font-semibold text-brand-700 hover:underline">Cadastre-se</Link>
+      <p className="mt-6 text-center text-sm text-slate-400">
+        Ainda não tem conta? <Link to="/cadastro" className="font-semibold text-neon-cyan hover:underline">Cadastre-se</Link>
       </p>
     </AuthLayout>
   );

@@ -53,8 +53,8 @@ export default function MesaFormModal({ aberto, mesa, aoFechar, aoSalvar }) {
         </div>
         <Campo id="localizacao" name="localizacao" label="Localização" list="locais" value={form.localizacao} onChange={alterar} erro={errosCampos.localizacao} />
         <datalist id="locais">{LOCAIS.map((l) => <option key={l} value={l} />)}</datalist>
-        <label className="flex items-center gap-3 text-sm">
-          <input type="checkbox" name="ativa" checked={form.ativa} onChange={alterar} className="size-4 rounded border-stone-300 accent-brand-600" />
+        <label className="flex cursor-pointer items-center gap-3 rounded-xl border border-white/10 bg-white/[0.03] px-3.5 py-3 text-sm text-slate-200">
+          <input type="checkbox" name="ativa" checked={form.ativa} onChange={alterar} className="size-4 accent-neon-cyan" />
           Mesa ativa (aceita novas reservas)
         </label>
         <div className="flex flex-col-reverse gap-2 pt-2 sm:flex-row sm:justify-end">
