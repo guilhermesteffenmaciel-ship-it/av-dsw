@@ -10,7 +10,10 @@ const API_PADRAO = ['localhost', '127.0.0.1'].includes(window.location.hostname)
   ? 'http://localhost:3000/api'
   : 'https://reserva-mesas-api-9ott.onrender.com/api';
 const API_URL = (() => {
-  const url = (import.meta.env.VITE_API_URL || API_PADRAO).trim().replace(/\/+$/, '');
+  const configurada = (import.meta.env.VITE_API_URL || '').trim();
+  // Ignora valores vazios ou o exemplo do README ("SEU-BACKEND"), usando a URL padrão
+  const valida = configurada.startsWith('http') && !/seu-backend/i.test(configurada);
+  const url = (valida ? configurada : API_PADRAO).replace(/\/+$/, '');
   return url.endsWith('/api') ? url : `${url}/api`;
 })();
 const CHAVE_TOKEN = 'reserva-mesas:token';
