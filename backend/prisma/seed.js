@@ -5,17 +5,18 @@ import { prisma } from '../src/config/prisma.js';
 
 const { ADMIN_NOME = 'Administrador', ADMIN_EMAIL, ADMIN_SENHA } = process.env;
 
+// Sem ADMIN_EMAIL/ADMIN_SENHA, apenas avisamos (sem derrubar a inicialização da API em produção)
 if (!ADMIN_EMAIL || !ADMIN_SENHA) {
-  console.error('Defina ADMIN_EMAIL e ADMIN_SENHA no .env para criar o administrador.');
-  process.exit(1);
+  console.warn('[seed] ADMIN_EMAIL e/ou ADMIN_SENHA não definidos: o administrador NÃO foi criado.');
+} else {
+  const senha = await bcrypt.hash(ADMIN_SENHA, 10);
+  await prisma.usuario.upsert({
+    where: { email: ADMIN_EMAIL.toLowerCase() },
+    update: {},
+    create: { nome: ADMIN_NOME, email: ADMIN_EMAIL.toLowerCase(), senha, perfil: 'ADMIN' },
+  });
+  console.log(`[seed] administrador ${ADMIN_EMAIL.toLowerCase()} pronto.`);
 }
-
-const senha = await bcrypt.hash(ADMIN_SENHA, 10);
-await prisma.usuario.upsert({
-  where: { email: ADMIN_EMAIL.toLowerCase() },
-  update: {},
-  create: { nome: ADMIN_NOME, email: ADMIN_EMAIL.toLowerCase(), senha, perfil: 'ADMIN' },
-});
 
 const mesas = [
   { numero: 1, capacidade: 2, localizacao: 'Salão' },
@@ -28,5 +29,5 @@ for (const mesa of mesas) {
   await prisma.mesa.upsert({ where: { numero: mesa.numero }, update: {}, create: mesa });
 }
 
-console.log('Seed concluído: administrador e mesas de exemplo criados.');
+console.log('[seed] mesas de exemplo prontas.');
 await prisma.$disconnect();
