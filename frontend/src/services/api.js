@@ -2,7 +2,17 @@
 // Todas as chamadas passam por aqui: o token JWT é enviado automaticamente
 // e os erros são convertidos em mensagens amigáveis.
 
-const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:3000/api';
+// URL da API:
+//  1. VITE_API_URL, se configurada (local: .env | produção: variável na Vercel)
+//  2. senão, no computador local usa a API local; publicado, usa a API do Render
+// O "/api" final é completado automaticamente caso tenha sido esquecido.
+const API_PADRAO = ['localhost', '127.0.0.1'].includes(window.location.hostname)
+  ? 'http://localhost:3000/api'
+  : 'https://reserva-mesas-api-9ott.onrender.com/api';
+const API_URL = (() => {
+  const url = (import.meta.env.VITE_API_URL || API_PADRAO).trim().replace(/\/+$/, '');
+  return url.endsWith('/api') ? url : `${url}/api`;
+})();
 const CHAVE_TOKEN = 'reserva-mesas:token';
 
 export const tokenStorage = {

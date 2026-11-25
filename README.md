@@ -3,7 +3,7 @@
 Aplicação web full stack para **reserva de mesas em restaurantes**, desenvolvida para a disciplina de DSW (AV1 e AV2, 4º bimestre).
 
 > **Aplicação publicada:** https://av-dsw.vercel.app
-> **API publicada:** `https://SEU-BACKEND.onrender.com/api` *(preencher após o deploy)*
+> **API publicada:** https://reserva-mesas-api-9ott.onrender.com/api
 
 ## Problema, público-alvo e solução
 
